@@ -136,7 +136,7 @@
                     <main className="flex-1 max-w-md w-full flex flex-col justify-center">
                         {phase === 'SETUP' && (
                             <div className="space-y-6 animation-fade-in">
-                                <button aria-label="Odpri pomoč in pravila igre" onClick={() => { previousFocusRef.current = document.activeElement; setIsHelpOpen(true); }} className="w-full bg-slate-800/70 hover:bg-slate-800 border border-slate-700 py-3 rounded-2xl font-semibold text-slate-100 transition-colors flex items-center justify-center gap-2">
+                                <button aria-label="Odpri pomoč in pravila igre" onClick={() => { previousFocusRef.current = document.activeElement; setIsHelpOpen(true); }} className="w-full bg-white hover:bg-slate-50 border border-slate-200 py-3 rounded-2xl font-semibold text-slate-700 shadow-sm transition-colors flex items-center justify-center gap-2">
                                     <HelpCircleIcon />
                                     Kako se igra?
                                 </button>
@@ -200,38 +200,38 @@
                     </main>
 
                     {isHelpOpen && (
-                        <div onClick={() => setIsHelpOpen(false)} className="fixed inset-0 z-10 bg-slate-950/80 backdrop-blur-sm p-4 flex items-center justify-center">
-                            <div ref={helpDialogRef} onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="help-dialog-title" aria-describedby="help-dialog-description" className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-3xl shadow-2xl p-6 space-y-5 animation-scale-in">
+                        <div onClick={() => setIsHelpOpen(false)} className="fixed inset-0 z-10 bg-slate-900/30 backdrop-blur-sm p-4 flex items-center justify-center">
+                            <div ref={helpDialogRef} onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="help-dialog-title" aria-describedby="help-dialog-description" className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 space-y-5 animation-scale-in">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <h2 id="help-dialog-title" className="text-2xl font-black text-white">Kako igrati</h2>
-                                        <p id="help-dialog-description" className="text-slate-400 text-sm mt-1">Hitra družabna igra socialne dedukcije.</p>
+                                        <h2 id="help-dialog-title" className="text-2xl font-black text-slate-900">Kako igrati</h2>
+                                        <p id="help-dialog-description" className="text-slate-500 text-sm mt-1">Hitra družabna igra socialne dedukcije.</p>
                                     </div>
-                                    <button onClick={() => setIsHelpOpen(false)} className="text-slate-400 hover:text-white text-2xl leading-none" aria-label="Zapri pomoč">
+                                    <button onClick={() => setIsHelpOpen(false)} className="text-slate-400 hover:text-slate-700 text-2xl leading-none" aria-label="Zapri pomoč">
                                         <span aria-hidden="true">×</span>
                                     </button>
                                 </div>
 
-                                <div className="bg-slate-900/70 border border-slate-700 rounded-2xl p-4 space-y-2">
-                                    <h3 className="font-bold text-indigo-300">Kaj je Vsiljivec?</h3>
-                                    <p className="text-slate-300 text-sm leading-6">
+                                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
+                                    <h3 className="font-bold text-indigo-600">Kaj je Vsiljivec?</h3>
+                                    <p className="text-slate-600 text-sm leading-6">
                                         Večina igralcev dobi isto skrivno besedo, nekateri pa dobijo podobno besedo ali pa nobene.
                                         Cilj skupine je odkriti vsiljivca, cilj vsiljivca pa je, da ostane neodkrit.
                                     </p>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <h3 className="font-bold text-indigo-300">Vloge</h3>
-                                    <ul className="space-y-2 text-sm text-slate-300">
-                                        <li><span className="font-semibold text-white">Večina:</span> prejme glavno besedo.</li>
-                                        <li><span className="font-semibold text-white">Zmeden:</span> prejme podobno, a drugačno besedo.</li>
-                                        <li><span className="font-semibold text-white">Vsiljivec:</span> ne prejme nobene besede in mora improvizirati.</li>
+                                    <h3 className="font-bold text-indigo-600">Vloge</h3>
+                                    <ul className="space-y-2 text-sm text-slate-600">
+                                        <li><span className="font-semibold text-slate-900">Večina:</span> prejme glavno besedo.</li>
+                                        <li><span className="font-semibold text-slate-900">Zmeden:</span> prejme podobno, a drugačno besedo.</li>
+                                        <li><span className="font-semibold text-slate-900">Vsiljivec:</span> ne prejme nobene besede in mora improvizirati.</li>
                                     </ul>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <h3 className="font-bold text-indigo-300">Pravila</h3>
-                                    <ol className="space-y-2 text-sm text-slate-300 list-decimal list-inside">
+                                    <h3 className="font-bold text-indigo-600">Pravila</h3>
+                                    <ol className="space-y-2 text-sm text-slate-600 list-decimal list-inside">
                                         <li>Dodajte vse igralce in začnite igro.</li>
                                         <li>Vsak igralec po vrsti vzame telefon, razkrije svojo besedo in ga poda naprej.</li>
                                         <li>Ko vsi vidijo svojo vlogo, vsak pove eno asociacijo na svojo besedo.</li>
@@ -240,7 +240,7 @@
                                     </ol>
                                 </div>
 
-                                <button onClick={() => setIsHelpOpen(false)} className="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-2xl font-bold transition-colors">
+                                <button onClick={() => setIsHelpOpen(false)} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-2xl font-bold transition-colors shadow-lg">
                                     Zapri pomoč
                                 </button>
                             </div>
