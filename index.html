@@ -17,10 +17,10 @@
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-900">
+<body class="bg-slate-100">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -128,10 +128,9 @@
             };
 
             return (
-                <div className="min-h-screen text-slate-100 flex flex-col items-center p-4">
+                <div className="min-h-screen text-slate-900 flex flex-col items-center p-4">
                     <header className="pt-8 pb-4 text-center">
-                        <h1 className="text-4xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent uppercase tracking-tighter">Vsiljivec</h1>
-                        <p className="text-slate-500 text-sm">GitHub Pages Edition</p>
+                        <h1 className="text-4xl font-black bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent uppercase tracking-tighter">Vsiljivec</h1>
                     </header>
 
                     <main className="flex-1 max-w-md w-full flex flex-col justify-center">
@@ -141,39 +140,39 @@
                                     <HelpCircleIcon />
                                     Kako se igra?
                                 </button>
-                                <div className="bg-slate-800/50 border border-slate-700 rounded-3xl p-6 shadow-xl">
+                                <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl">
                                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><UsersIcon/> Igralci</h2>
                                     <div className="flex gap-2 mb-4">
-                                        <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} className="flex-1 bg-slate-900 border border-slate-600 rounded-xl px-4 py-2" placeholder="Ime..." />
-                                        <button onClick={() => { if(newPlayerName.trim()) { setPlayers([...players, newPlayerName.trim()]); setNewPlayerName(''); } }} className="bg-indigo-600 px-4 rounded-xl font-bold">Dodaj</button>
+                                        <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." aria-label="Ime igralca" />
+                                        <button onClick={() => { if(newPlayerName.trim()) { setPlayers([...players, newPlayerName.trim()]); setNewPlayerName(''); } }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl font-bold shadow-md transition-all active:scale-95">Dodaj</button>
                                     </div>
                                     <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                                         {players.map(p => (
-                                            <span key={p} className="bg-slate-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm border border-slate-600">
-                                                {p} <button onClick={() => setPlayers(players.filter(x => x !== p))} className="text-red-400 font-bold">×</button>
+                                            <span key={p} className="bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2 text-sm border border-slate-300">
+                                                {p} <button onClick={() => setPlayers(players.filter(x => x !== p))} className="text-red-600 hover:text-red-700 focus-visible:text-red-700 font-bold">×</button>
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                                <button onClick={startGame} disabled={!isSetupValid} className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 py-4 rounded-2xl font-black text-xl shadow-lg transition-all active:scale-95 uppercase">Začni Igro</button>
+                                <button onClick={startGame} disabled={!isSetupValid} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 py-4 rounded-2xl font-black text-xl shadow-lg transition-all active:scale-95 uppercase">Začni Igro</button>
                             </div>
                         )}
 
                         {phase === 'PASS' && (
-                            <div className="text-center space-y-8 animation-slide-up bg-slate-800/60 p-10 rounded-3xl border border-slate-700">
+                            <div className="text-center space-y-8 animation-slide-up bg-white p-10 rounded-3xl border border-slate-200 shadow-lg">
                                 <SmartphoneIcon className="mx-auto text-indigo-400 animate-pulse" />
                                 <div>
-                                    <p className="text-slate-400 uppercase text-xs tracking-widest mb-2">Podaj telefon:</p>
+                                    <p className="text-slate-500 uppercase text-xs tracking-widest mb-2">Podaj telefon:</p>
                                     <h2 className="text-5xl font-black">{gameData[currentPlayerIndex].name}</h2>
                                 </div>
-                                <button onClick={() => setPhase('REVEAL')} className="w-full bg-indigo-600 py-5 rounded-2xl font-bold text-xl shadow-xl">Sem {gameData[currentPlayerIndex].name}</button>
+                                <button onClick={() => setPhase('REVEAL')} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-5 rounded-2xl font-bold text-xl shadow-xl transition-all active:scale-95">Sem {gameData[currentPlayerIndex].name}</button>
                             </div>
                         )}
 
                         {phase === 'REVEAL' && (
                             <div className="text-center space-y-6 animation-scale-in">
-                                <div className="bg-slate-800 p-10 rounded-3xl border-2 border-indigo-500 shadow-2xl">
-                                    <p className="text-slate-400 mb-4">Tvoja beseda je:</p>
+                                <div className="bg-white p-10 rounded-3xl border-2 border-indigo-500 shadow-2xl">
+                                    <p className="text-slate-500 mb-4">Tvoja beseda je:</p>
                                     <h2 className="text-4xl font-black uppercase tracking-wider">
                                         {gameData[currentPlayerIndex].role === 'IMPOSTOR' ? <span className="text-red-500">VSILJIVEC</span> : gameData[currentPlayerIndex].word}
                                     </h2>
@@ -185,17 +184,17 @@
                                     } else {
                                         setPhase('END');
                                     }
-                                }} className="w-full bg-slate-700 py-5 rounded-2xl font-bold text-xl">Skrij in nadaljuj</button>
+                                }} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-5 rounded-2xl font-bold text-xl shadow-lg transition-all active:scale-95">Skrij in nadaljuj</button>
                             </div>
                         )}
 
                         {phase === 'END' && (
                             <div className="text-center space-y-6 animation-fade-in">
-                                <div className="bg-emerald-900/20 border border-emerald-500/30 p-8 rounded-3xl">
-                                    <h2 className="text-3xl font-bold text-emerald-400 mb-2">Pripravljeni!</h2>
-                                    <p className="text-slate-300">Vsak naj pove eno asociacijo, nato glasujte o vsiljivcu.</p>
+                                <div className="bg-emerald-50 border border-emerald-300 p-8 rounded-3xl">
+                                    <h2 className="text-3xl font-bold text-emerald-600 mb-2">Pripravljeni!</h2>
+                                    <p className="text-slate-600">Vsak naj pove eno asociacijo, nato glasujte o vsiljivcu.</p>
                                 </div>
-                                <button onClick={() => setPhase('SETUP')} className="w-full bg-indigo-600 py-4 rounded-2xl font-bold text-xl">Nova Igra</button>
+                                <button onClick={() => setPhase('SETUP')} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-all active:scale-95">Nova Igra</button>
                             </div>
                         )}
                     </main>
