@@ -96,7 +96,7 @@
                                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><UsersIcon/> Igralci</h2>
                                     <div className="flex gap-2 mb-4">
                                         <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." />
-                                        <button onClick={() => { if(newPlayerName.trim()) { setPlayers([...players, newPlayerName.trim()]); setNewPlayerName(''); } }} className="bg-indigo-600 px-4 rounded-xl font-bold">Dodaj</button>
+                                        <button onClick={() => { if(newPlayerName.trim()) { setPlayers([...players, newPlayerName.trim()]); setNewPlayerName(''); } }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl font-bold shadow-md transition-all active:scale-95">Dodaj</button>
                                     </div>
                                     <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                                         {players.map(p => (
@@ -106,7 +106,7 @@
                                         ))}
                                     </div>
                                 </div>
-                                <button onClick={startGame} disabled={!isSetupValid} className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 py-4 rounded-2xl font-black text-xl shadow-lg transition-all active:scale-95 uppercase">Začni Igro</button>
+                                <button onClick={startGame} disabled={!isSetupValid} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 py-4 rounded-2xl font-black text-xl shadow-lg transition-all active:scale-95 uppercase">Začni Igro</button>
                             </div>
                         )}
 
@@ -117,7 +117,7 @@
                                     <p className="text-slate-500 uppercase text-xs tracking-widest mb-2">Podaj telefon:</p>
                                     <h2 className="text-5xl font-black">{gameData[currentPlayerIndex].name}</h2>
                                 </div>
-                                <button onClick={() => setPhase('REVEAL')} className="w-full bg-indigo-600 py-5 rounded-2xl font-bold text-xl shadow-xl">Sem {gameData[currentPlayerIndex].name}</button>
+                                <button onClick={() => setPhase('REVEAL')} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-5 rounded-2xl font-bold text-xl shadow-xl transition-all active:scale-95">Sem {gameData[currentPlayerIndex].name}</button>
                             </div>
                         )}
 
@@ -146,7 +146,7 @@
                                     <h2 className="text-3xl font-bold text-emerald-600 mb-2">Pripravljeni!</h2>
                                     <p className="text-slate-600">Vsak naj pove eno asociacijo, nato glasujte o vsiljivcu.</p>
                                 </div>
-                                <button onClick={() => setPhase('SETUP')} className="w-full bg-indigo-600 py-4 rounded-2xl font-bold text-xl">Nova Igra</button>
+                                <button onClick={() => setPhase('SETUP')} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-all active:scale-95">Nova Igra</button>
                             </div>
                         )}
                     </main>
