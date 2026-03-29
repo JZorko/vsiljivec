@@ -63,8 +63,8 @@
             const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
             const [isHelpOpen, setIsHelpOpen] = useState(false);
             const helpDialogRef = useRef(null);
-            const helpButtonRef = useRef(null);
             const previousFocusRef = useRef(null);
+            const getHelpDialogFocusableElements = () => helpDialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR) || [];
 
             useEffect(() => {
                 if (!isHelpOpen) return;
@@ -79,7 +79,7 @@
 
                     if (event.key !== 'Tab' || !helpDialogRef.current) return;
 
-                    const focusableElements = helpDialogRef.current.querySelectorAll(FOCUSABLE_SELECTOR);
+                    const focusableElements = getHelpDialogFocusableElements();
                     const firstFocusable = focusableElements[0];
                     const lastFocusable = focusableElements[focusableElements.length - 1];
 
@@ -94,7 +94,7 @@
                     }
                 };
 
-                const focusableElements = helpDialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR);
+                const focusableElements = getHelpDialogFocusableElements();
                 focusableElements?.[0]?.focus();
 
                 window.addEventListener('keydown', handleKeyDown);
@@ -137,7 +137,7 @@
                     <main className="flex-1 max-w-md w-full flex flex-col justify-center">
                         {phase === 'SETUP' && (
                             <div className="space-y-6 animation-fade-in">
-                                <button onClick={(event) => { helpButtonRef.current = event.currentTarget; previousFocusRef.current = event.currentTarget; setIsHelpOpen(true); }} className="w-full bg-slate-800/70 hover:bg-slate-800 border border-slate-700 py-3 rounded-2xl font-semibold text-slate-100 transition-colors flex items-center justify-center gap-2">
+                                <button aria-label="Odpri pomoč in pravila igre" onClick={() => { previousFocusRef.current = document.activeElement; setIsHelpOpen(true); }} className="w-full bg-slate-800/70 hover:bg-slate-800 border border-slate-700 py-3 rounded-2xl font-semibold text-slate-100 transition-colors flex items-center justify-center gap-2">
                                     <HelpCircleIcon />
                                     Kako se igra?
                                 </button>
