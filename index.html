@@ -64,11 +64,11 @@
             const [isHelpOpen, setIsHelpOpen] = useState(false);
             const helpDialogRef = useRef(null);
             const helpButtonRef = useRef(null);
+            const previousFocusRef = useRef(null);
 
             useEffect(() => {
                 if (!isHelpOpen) return;
 
-                const previousActiveElement = helpButtonRef.current || document.activeElement;
                 const handleKeyDown = (event) => {
                     if (event.key === 'Escape') {
                         event.preventDefault();
@@ -100,7 +100,7 @@
                 window.addEventListener('keydown', handleKeyDown);
                 return () => {
                     window.removeEventListener('keydown', handleKeyDown);
-                    previousActiveElement?.focus?.();
+                    previousFocusRef.current?.focus?.();
                 };
             }, [isHelpOpen]);
 
@@ -137,7 +137,7 @@
                     <main className="flex-1 max-w-md w-full flex flex-col justify-center">
                         {phase === 'SETUP' && (
                             <div className="space-y-6 animation-fade-in">
-                                <button onClick={(event) => { helpButtonRef.current = event.currentTarget; setIsHelpOpen(true); }} className="w-full bg-slate-800/70 hover:bg-slate-800 border border-slate-700 py-3 rounded-2xl font-semibold text-slate-100 transition-colors flex items-center justify-center gap-2">
+                                <button onClick={(event) => { helpButtonRef.current = event.currentTarget; previousFocusRef.current = event.currentTarget; setIsHelpOpen(true); }} className="w-full bg-slate-800/70 hover:bg-slate-800 border border-slate-700 py-3 rounded-2xl font-semibold text-slate-100 transition-colors flex items-center justify-center gap-2">
                                     <HelpCircleIcon />
                                     Kako se igra?
                                 </button>
