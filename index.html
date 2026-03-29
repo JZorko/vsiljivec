@@ -24,7 +24,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useEffect, useState } = React;
 
         const WORD_PAIRS = [
             { main: "Jabolko", similar: "Hruška" }, { main: "Kava", similar: "Čaj" },
@@ -61,6 +61,19 @@
             const [gameData, setGameData] = useState([]);
             const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
             const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+            useEffect(() => {
+                if (!isHelpOpen) return;
+
+                const handleKeyDown = (event) => {
+                    if (event.key === 'Escape') {
+                        setIsHelpOpen(false);
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [isHelpOpen]);
 
             const totalSpecialRoles = impostorCount + confusedCount;
             const isSetupValid = players.length >= 3 && totalSpecialRoles < players.length;
@@ -168,7 +181,6 @@
                                     </div>
                                     <button onClick={() => setIsHelpOpen(false)} className="text-slate-400 hover:text-white text-2xl leading-none" aria-label="Zapri pomoč">
                                         <span aria-hidden="true">×</span>
-                                        <span className="sr-only">Zapri pomoč</span>
                                     </button>
                                 </div>
 
