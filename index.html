@@ -37,6 +37,7 @@
             { main: "Letalo", similar: "Helikopter" }, { main: "Slovenija", similar: "Hrvaška" },
             { main: "Mačka", similar: "Pes" }, { main: "Gozd", similar: "Džungla" }
         ];
+        const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
         const shuffleArray = (array) => {
             const newArr = [...array];
@@ -77,7 +78,7 @@
 
                     if (event.key !== 'Tab' || !helpDialogRef.current) return;
 
-                    const focusableElements = helpDialogRef.current.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    const focusableElements = helpDialogRef.current.querySelectorAll(FOCUSABLE_SELECTOR);
                     const firstFocusable = focusableElements[0];
                     const lastFocusable = focusableElements[focusableElements.length - 1];
 
@@ -92,7 +93,7 @@
                     }
                 };
 
-                const focusableElements = helpDialogRef.current?.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                const focusableElements = helpDialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR);
                 focusableElements?.[0]?.focus();
 
                 window.addEventListener('keydown', handleKeyDown);
@@ -199,7 +200,7 @@
                     </main>
 
                     {isHelpOpen && (
-                        <div onClick={() => setIsHelpOpen(false)} className="fixed inset-0 z-10 bg-slate-950/80 backdrop-blur-sm p-4 flex items-center justify-center">
+                        <div role="presentation" onClick={() => setIsHelpOpen(false)} className="fixed inset-0 z-10 bg-slate-950/80 backdrop-blur-sm p-4 flex items-center justify-center">
                             <div ref={helpDialogRef} onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="help-dialog-title" aria-describedby="help-dialog-description" className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-3xl shadow-2xl p-6 space-y-5 animation-scale-in">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
