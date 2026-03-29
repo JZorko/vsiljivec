@@ -26,12 +26,6 @@ Spletna družabna igra socialne dedukcije za več igralcev.
 
 Igra deluje neposredno v brskalniku — odpri datoteko `index.html` ali obišči objavljeno stran na [GitHub Pages](https://jzorko.github.io/vsiljivec/).
 
-## Tehnologije
-
-- [React 18](https://react.dev/) (UMD, brez gradnje)
-- [Tailwind CSS](https://tailwindcss.com/) (CDN)
-- Čisti HTML/JavaScript — brez strežnika, brez namestitve
-
 ## Licenca
 
 Glej datoteko [LICENSE](LICENSE).
