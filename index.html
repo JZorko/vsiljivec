@@ -24,7 +24,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useEffect, useState } = React;
+        const { useEffect, useRef, useState } = React;
 
         const WORD_PAIRS = [
             { main: "Jabolko", similar: "Hruška" }, { main: "Kava", similar: "Čaj" },
@@ -61,18 +61,45 @@
             const [gameData, setGameData] = useState([]);
             const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
             const [isHelpOpen, setIsHelpOpen] = useState(false);
+            const helpDialogRef = useRef(null);
 
             useEffect(() => {
                 if (!isHelpOpen) return;
 
+                const previousActiveElement = document.activeElement;
                 const handleKeyDown = (event) => {
                     if (event.key === 'Escape') {
+                        event.preventDefault();
+                        event.stopPropagation();
                         setIsHelpOpen(false);
+                        return;
+                    }
+
+                    if (event.key !== 'Tab' || !helpDialogRef.current) return;
+
+                    const focusableElements = helpDialogRef.current.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    const firstFocusable = focusableElements[0];
+                    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+                    if (!firstFocusable || !lastFocusable) return;
+
+                    if (event.shiftKey && document.activeElement === firstFocusable) {
+                        event.preventDefault();
+                        lastFocusable.focus();
+                    } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+                        event.preventDefault();
+                        firstFocusable.focus();
                     }
                 };
 
+                const focusableElements = helpDialogRef.current?.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                focusableElements?.[0]?.focus();
+
                 window.addEventListener('keydown', handleKeyDown);
-                return () => window.removeEventListener('keydown', handleKeyDown);
+                return () => {
+                    window.removeEventListener('keydown', handleKeyDown);
+                    previousActiveElement?.focus?.();
+                };
             }, [isHelpOpen]);
 
             const totalSpecialRoles = impostorCount + confusedCount;
@@ -173,7 +200,7 @@
 
                     {isHelpOpen && (
                         <div onClick={() => setIsHelpOpen(false)} className="fixed inset-0 z-10 bg-slate-950/80 backdrop-blur-sm p-4 flex items-center justify-center">
-                            <div onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="help-dialog-title" aria-describedby="help-dialog-description" className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-3xl shadow-2xl p-6 space-y-5 animation-scale-in">
+                            <div ref={helpDialogRef} onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="help-dialog-title" aria-describedby="help-dialog-description" className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-3xl shadow-2xl p-6 space-y-5 animation-scale-in">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
                                         <h2 id="help-dialog-title" className="text-2xl font-black text-white">Kako igrati</h2>
