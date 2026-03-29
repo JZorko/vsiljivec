@@ -95,13 +95,13 @@
                                 <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl">
                                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><UsersIcon/> Igralci</h2>
                                     <div className="flex gap-2 mb-4">
-                                        <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." />
+                                        <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." aria-label="Ime igralca" />
                                         <button onClick={() => { if(newPlayerName.trim()) { setPlayers([...players, newPlayerName.trim()]); setNewPlayerName(''); } }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl font-bold shadow-md transition-all active:scale-95">Dodaj</button>
                                     </div>
                                     <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                                         {players.map(p => (
                                             <span key={p} className="bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2 text-sm border border-slate-300">
-                                                {p} <button onClick={() => setPlayers(players.filter(x => x !== p))} className="text-red-400 font-bold">×</button>
+                                                {p} <button onClick={() => setPlayers(players.filter(x => x !== p))} className="text-red-600 hover:text-red-700 focus-visible:text-red-700 font-bold">×</button>
                                             </span>
                                         ))}
                                     </div>
