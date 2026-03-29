@@ -26,17 +26,170 @@
     <script type="text/babel">
         const { useEffect, useRef, useState } = React;
 
-        const WORD_PAIRS = [
-            { main: "Jabolko", similar: "Hruška" }, { main: "Kava", similar: "Čaj" },
-            { main: "Pivo", similar: "Vino" }, { main: "Palačinke", similar: "Vaflji" },
-            { main: "Mleko", similar: "Voda" }, { main: "Pica", similar: "Hamburger" },
-            { main: "Kruh", similar: "Žemlja" }, { main: "Torta", similar: "Pita" },
-            { main: "Telefon", similar: "Tablica" }, { main: "Knjiga", similar: "Revija" },
-            { main: "Morje", similar: "Jezero" }, { main: "Sonce", similar: "Luna" },
-            { main: "Avto", similar: "Kolo" }, { main: "Avtobus", similar: "Vlak" },
-            { main: "Letalo", similar: "Helikopter" }, { main: "Slovenija", similar: "Hrvaška" },
-            { main: "Mačka", similar: "Pes" }, { main: "Gozd", similar: "Džungla" }
+        const ALL_THEMES_ID = 'ALL';
+        const WORD_THEMES = [
+            {
+                id: 'food',
+                label: 'Hrana',
+                pairs: [
+                    { main: "Jabolko", similar: "Hruška" },
+                    { main: "Palačinke", similar: "Vaflji" },
+                    { main: "Pica", similar: "Hamburger" },
+                    { main: "Kruh", similar: "Žemlja" },
+                    { main: "Torta", similar: "Pita" },
+                    { main: "Špageti", similar: "Lazanja" },
+                    { main: "Riž", similar: "Kuskus" },
+                    { main: "Sir", similar: "Maslo" },
+                    { main: "Juha", similar: "Enolončnica" },
+                    { main: "Pomfrit", similar: "Pečen krompir" }
+                ]
+            },
+            {
+                id: 'drinks',
+                label: 'Pijača',
+                pairs: [
+                    { main: "Kava", similar: "Čaj" },
+                    { main: "Pivo", similar: "Vino" },
+                    { main: "Mleko", similar: "Voda" },
+                    { main: "Limonada", similar: "Pomarančni sok" },
+                    { main: "Kakav", similar: "Vroča čokolada" },
+                    { main: "Mineralna voda", similar: "Tonik" },
+                    { main: "Espresso", similar: "Kapučino" },
+                    { main: "Smuti", similar: "Mlečni napitek" },
+                    { main: "Gin", similar: "Vodka" },
+                    { main: "Šampanjec", similar: "Penina" }
+                ]
+            },
+            {
+                id: 'sports',
+                label: 'Šport',
+                pairs: [
+                    { main: "Nogomet", similar: "Futsal" },
+                    { main: "Košarka", similar: "Rokomet" },
+                    { main: "Tenis", similar: "Badminton" },
+                    { main: "Smučanje", similar: "Deskanje na snegu" },
+                    { main: "Plavanje", similar: "Vaterpolo" },
+                    { main: "Maraton", similar: "Triatlon" },
+                    { main: "Odbojka", similar: "Odbojka na mivki" },
+                    { main: "Boks", similar: "Kickboks" },
+                    { main: "Kolesarjenje", similar: "Motokros" },
+                    { main: "Golf", similar: "Mini golf" }
+                ]
+            },
+            {
+                id: 'places',
+                label: 'Kraji',
+                pairs: [
+                    { main: "Slovenija", similar: "Hrvaška" },
+                    { main: "Pariz", similar: "Rim" },
+                    { main: "London", similar: "Dublin" },
+                    { main: "New York", similar: "Chicago" },
+                    { main: "Tokio", similar: "Seul" },
+                    { main: "Plaža", similar: "Obala" },
+                    { main: "Gore", similar: "Hribovje" },
+                    { main: "Otok", similar: "Polotok" },
+                    { main: "Puščava", similar: "Savana" },
+                    { main: "Muzej", similar: "Galerija" }
+                ]
+            },
+            {
+                id: 'animals',
+                label: 'Živali',
+                pairs: [
+                    { main: "Mačka", similar: "Pes" },
+                    { main: "Lev", similar: "Tiger" },
+                    { main: "Konj", similar: "Osel" },
+                    { main: "Delfin", similar: "Kit" },
+                    { main: "Orel", similar: "Jastreb" },
+                    { main: "Miš", similar: "Podgana" },
+                    { main: "Želva", similar: "Kuščar" },
+                    { main: "Krava", similar: "Bik" },
+                    { main: "Pingvin", similar: "Noj" },
+                    { main: "Medved", similar: "Volk" }
+                ]
+            },
+            {
+                id: 'nature',
+                label: 'Narava',
+                pairs: [
+                    { main: "Morje", similar: "Jezero" },
+                    { main: "Sonce", similar: "Luna" },
+                    { main: "Gozd", similar: "Džungla" },
+                    { main: "Reka", similar: "Potok" },
+                    { main: "Slap", similar: "Brzice" },
+                    { main: "Nevihta", similar: "Vihar" },
+                    { main: "Mavrica", similar: "Aurora" },
+                    { main: "Vulkan", similar: "Gejzir" },
+                    { main: "Travnik", similar: "Polje" },
+                    { main: "Lednik", similar: "Snežišče" }
+                ]
+            },
+            {
+                id: 'technology',
+                label: 'Tehnologija',
+                pairs: [
+                    { main: "Telefon", similar: "Tablica" },
+                    { main: "Računalnik", similar: "Prenosnik" },
+                    { main: "Tipkovnica", similar: "Miška" },
+                    { main: "Monitor", similar: "Televizor" },
+                    { main: "Fotoaparat", similar: "Videokamera" },
+                    { main: "Slušalke", similar: "Zvočnik" },
+                    { main: "Polnilec", similar: "Baterija" },
+                    { main: "Pametna ura", similar: "Fitnes zapestnica" },
+                    { main: "Dron", similar: "Helikopter" },
+                    { main: "USB ključ", similar: "Zunanji disk" }
+                ]
+            },
+            {
+                id: 'transport',
+                label: 'Prevoz',
+                pairs: [
+                    { main: "Avto", similar: "Kolo" },
+                    { main: "Avtobus", similar: "Vlak" },
+                    { main: "Letalo", similar: "Helikopter" },
+                    { main: "Motor", similar: "Skuter" },
+                    { main: "Taksi", similar: "Uber" },
+                    { main: "Podmornica", similar: "Ladja" },
+                    { main: "Tramvaj", similar: "Trolejbus" },
+                    { main: "Kajak", similar: "Kanu" },
+                    { main: "Jadrnica", similar: "Gliser" },
+                    { main: "Rolka", similar: "Skiro" }
+                ]
+            },
+            {
+                id: 'home',
+                label: 'Dom',
+                pairs: [
+                    { main: "Kavč", similar: "Fotelj" },
+                    { main: "Miza", similar: "Pult" },
+                    { main: "Postelja", similar: "Kavč" },
+                    { main: "Omara", similar: "Predalnik" },
+                    { main: "Vzglavnik", similar: "Odeja" },
+                    { main: "Pečica", similar: "Mikrovalovka" },
+                    { main: "Hladilnik", similar: "Zamrzovalnik" },
+                    { main: "Sesalnik", similar: "Metla" },
+                    { main: "Tuš", similar: "Kad" },
+                    { main: "Balkon", similar: "Terasa" }
+                ]
+            },
+            {
+                id: 'work',
+                label: 'Poklici',
+                pairs: [
+                    { main: "Zdravnik", similar: "Medicinska sestra" },
+                    { main: "Učitelj", similar: "Profesor" },
+                    { main: "Gasilec", similar: "Policist" },
+                    { main: "Kuhar", similar: "Natakar" },
+                    { main: "Pilot", similar: "Stevard" },
+                    { main: "Arhitekt", similar: "Gradbenik" },
+                    { main: "Novinar", similar: "Voditelj" },
+                    { main: "Programer", similar: "Oblikovalec" },
+                    { main: "Fotograf", similar: "Snemalec" },
+                    { main: "Frizer", similar: "Kozmetičar" }
+                ]
+            }
         ];
+        const WORD_PAIRS = WORD_THEMES.flatMap((theme) => theme.pairs);
         const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
         const shuffleArray = (array) => {
@@ -77,8 +230,10 @@
             const [newPlayerName, setNewPlayerName] = useState('');
             const [impostorCount, setImpostorCount] = useState(1);
             const [confusedCount, setConfusedCount] = useState(1);
+            const [selectedThemeId, setSelectedThemeId] = useState(ALL_THEMES_ID);
             const [gameData, setGameData] = useState([]);
             const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+            const [currentThemeLabel, setCurrentThemeLabel] = useState('');
             const [isHelpOpen, setIsHelpOpen] = useState(false);
             const [isConfigOpen, setIsConfigOpen] = useState(false);
             const helpDialogRef = useRef(null);
@@ -140,6 +295,7 @@
             const isSetupValid = players.length >= 3 && totalSpecialRoles < players.length;
             const maxImpostorOptions = calculateMaxImpostorCount(players.length, confusedCount);
             const maxConfusedOptions = calculateMaxConfusedCount(players.length, impostorCount);
+            const selectedTheme = WORD_THEMES.find((theme) => theme.id === selectedThemeId) || null;
             const handleImpostorCountChange = (nextImpostorCount) => {
                 const safeImpostorCount = clampCount(nextImpostorCount, 0, maxImpostorOptions);
                 setImpostorCount(safeImpostorCount);
@@ -165,11 +321,12 @@
 
             const startGame = () => {
                 if (!isSetupValid) return;
-                const pair = WORD_PAIRS[Math.floor(Math.random() * WORD_PAIRS.length)];
+                const availablePairs = selectedTheme ? selectedTheme.pairs : WORD_PAIRS;
+                const pair = availablePairs[Math.floor(Math.random() * availablePairs.length)];
                 const swap = Math.random() > 0.5;
                 const mainWord = swap ? pair.similar : pair.main;
                 const similarWord = swap ? pair.main : pair.similar;
-                
+
                 let roles = [];
                 for (let i = 0; i < impostorCount; i++) roles.push({ type: 'IMPOSTOR', word: null });
                 for (let i = 0; i < confusedCount; i++) roles.push({ type: 'CONFUSED', word: similarWord });
@@ -180,6 +337,7 @@
 
                 setGameData(assigned);
                 setCurrentPlayerIndex(0);
+                setCurrentThemeLabel(selectedTheme ? selectedTheme.label : '');
                 setPhase('PASS');
             };
 
@@ -220,7 +378,7 @@
                                     >
                                         <div>
                                             <h2 className="text-xl font-bold flex items-center gap-2"><SettingsIcon /> Konfiguracija igre</h2>
-                                            <p className="text-sm text-slate-500 mt-1">Vsiljivci: {impostorCount} • Zmedeni: {confusedCount}</p>
+                                            <p className="text-sm text-slate-500 mt-1">Vsiljivci: {impostorCount} • Zmedeni: {confusedCount} • Tema: {selectedTheme ? selectedTheme.label : 'Vse teme'}</p>
                                         </div>
                                         <span className="text-slate-500">
                                             <ChevronDownIcon isOpen={isConfigOpen} />
@@ -229,6 +387,24 @@
 
                                     {isConfigOpen && (
                                         <div id="game-configuration-panel" className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <label className="block sm:col-span-2">
+                                                <span className="text-sm font-semibold text-slate-700">Tema</span>
+                                                <select
+                                                    value={selectedThemeId}
+                                                    onChange={(event) => setSelectedThemeId(event.target.value)}
+                                                    className="mt-2 h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-base font-medium text-slate-900"
+                                                    aria-label="Izberi temo"
+                                                >
+                                                    <option value={ALL_THEMES_ID}>Vse teme (naključno)</option>
+                                                    {WORD_THEMES.map((theme) => (
+                                                        <option key={theme.id} value={theme.id}>{theme.label}</option>
+                                                    ))}
+                                                </select>
+                                                <p className="mt-2 text-sm text-slate-500 leading-6">
+                                                    Izberi temo, če želiš ožji nabor besed in nekoliko lažjo igro za vsiljivce.
+                                                </p>
+                                            </label>
+
                                             <label className="block">
                                                 <span className="text-sm font-semibold text-slate-700">Število vsiljivcev</span>
                                                 <div className="mt-2 flex items-center gap-2">
@@ -325,6 +501,9 @@
                         {phase === 'REVEAL' && (
                             <div className="text-center space-y-6 animation-scale-in">
                                 <div className="bg-white p-10 rounded-3xl border-2 border-indigo-500 shadow-2xl">
+                                    {currentThemeLabel && (
+                                        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600 mb-4">Tema: {currentThemeLabel}</p>
+                                    )}
                                     <p className="text-slate-500 mb-4">Tvoja beseda je:</p>
                                     <h2 className="text-4xl font-black uppercase tracking-wider">
                                         {gameData[currentPlayerIndex].role === 'IMPOSTOR' ? <span className="text-red-500">VSILJIVEC</span> : gameData[currentPlayerIndex].word}
@@ -385,7 +564,7 @@
                                 <div className="space-y-3">
                                     <h3 className="font-bold text-indigo-600">Pravila</h3>
                                     <ol className="space-y-2 text-sm text-slate-600 list-decimal list-inside">
-                                        <li>Dodajte vse igralce in začnite igro.</li>
+                                        <li>Dodajte vse igralce, po želji izberite temo in začnite igro.</li>
                                         <li>Vsak igralec po vrsti vzame telefon, razkrije svojo besedo in ga poda naprej.</li>
                                         <li>Ko vsi vidijo svojo vlogo, vsak pove eno asociacijo na svojo besedo.</li>
                                         <li>Skupaj glasujte, kdo je po vašem mnenju vsiljivec.</li>
