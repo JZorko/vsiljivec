@@ -47,6 +47,16 @@
             }
             return newArr;
         };
+        const clampCount = (value, min, max) => Math.min(Math.max(value, min), max);
+        const parseCountInput = (value) => {
+            if (!/^\d+$/.test(value)) return null;
+            return Number.parseInt(value, 10);
+        };
+        const preventInvalidNumberInput = (event) => {
+            if (['e', 'E', '+', '-', '.', ','].includes(event.key)) {
+                event.preventDefault();
+            }
+        };
         const calculateMaxImpostorCount = (playerCount, currentConfusedCount) => Math.max(1, playerCount - currentConfusedCount - 1);
         const calculateMaxConfusedCount = (playerCount, currentImpostorCount) => Math.max(0, playerCount - currentImpostorCount - 1);
 
@@ -130,17 +140,27 @@
             const isSetupValid = players.length >= 3 && totalSpecialRoles < players.length;
             const maxImpostorOptions = calculateMaxImpostorCount(players.length, confusedCount);
             const maxConfusedOptions = calculateMaxConfusedCount(players.length, impostorCount);
-            const impostorOptions = Array.from({ length: maxImpostorOptions }, (_, index) => index + 1);
-            const confusedOptions = Array.from({ length: maxConfusedOptions + 1 }, (_, index) => index);
             const handleImpostorCountChange = (nextImpostorCount) => {
-                setImpostorCount(nextImpostorCount);
-                const nextMaxConfusedCount = calculateMaxConfusedCount(players.length, nextImpostorCount);
+                const safeImpostorCount = clampCount(nextImpostorCount, 1, maxImpostorOptions);
+                setImpostorCount(safeImpostorCount);
+                const nextMaxConfusedCount = calculateMaxConfusedCount(players.length, safeImpostorCount);
                 setConfusedCount(currentConfusedCount => Math.min(currentConfusedCount, nextMaxConfusedCount));
             };
             const handleConfusedCountChange = (nextConfusedCount) => {
-                setConfusedCount(nextConfusedCount);
-                const nextMaxImpostorCount = calculateMaxImpostorCount(players.length, nextConfusedCount);
+                const safeConfusedCount = clampCount(nextConfusedCount, 0, maxConfusedOptions);
+                setConfusedCount(safeConfusedCount);
+                const nextMaxImpostorCount = calculateMaxImpostorCount(players.length, safeConfusedCount);
                 setImpostorCount(currentImpostorCount => Math.min(currentImpostorCount, nextMaxImpostorCount));
+            };
+            const handleImpostorInputChange = (value) => {
+                const parsedValue = parseCountInput(value);
+                if (parsedValue === null) return;
+                handleImpostorCountChange(parsedValue);
+            };
+            const handleConfusedInputChange = (value) => {
+                const parsedValue = parseCountInput(value);
+                if (parsedValue === null) return;
+                handleConfusedCountChange(parsedValue);
             };
 
             const startGame = () => {
@@ -211,28 +231,74 @@
                                         <div id="game-configuration-panel" className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <label className="block">
                                                 <span className="text-sm font-semibold text-slate-700">Število vsiljivcev</span>
-                                                <select
-                                                    value={impostorCount}
-                                                    onChange={(event) => handleImpostorCountChange(Number(event.target.value))}
-                                                    className="mt-2 w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3"
-                                                >
-                                                    {impostorOptions.map(option => (
-                                                        <option key={option} value={option}>{option}</option>
-                                                    ))}
-                                                </select>
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleImpostorCountChange(impostorCount - 1)}
+                                                        disabled={impostorCount <= 1}
+                                                        className="h-12 w-12 rounded-xl border border-slate-300 bg-white text-xl font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                                        aria-label="Zmanjšaj število vsiljivcev"
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        inputMode="numeric"
+                                                        min="1"
+                                                        step="1"
+                                                        max={maxImpostorOptions}
+                                                        value={impostorCount}
+                                                        onChange={(event) => handleImpostorInputChange(event.target.value)}
+                                                        onKeyDown={preventInvalidNumberInput}
+                                                        className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-center text-lg font-semibold"
+                                                        aria-label="Število vsiljivcev"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleImpostorCountChange(impostorCount + 1)}
+                                                        disabled={impostorCount >= maxImpostorOptions}
+                                                        className="h-12 w-12 rounded-xl border border-slate-300 bg-white text-xl font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                                        aria-label="Povečaj število vsiljivcev"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
                                             </label>
 
                                             <label className="block">
                                                 <span className="text-sm font-semibold text-slate-700">Število zmedenih</span>
-                                                <select
-                                                    value={confusedCount}
-                                                    onChange={(event) => handleConfusedCountChange(Number(event.target.value))}
-                                                    className="mt-2 w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3"
-                                                >
-                                                    {confusedOptions.map(option => (
-                                                        <option key={option} value={option}>{option}</option>
-                                                    ))}
-                                                </select>
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleConfusedCountChange(confusedCount - 1)}
+                                                        disabled={confusedCount <= 0}
+                                                        className="h-12 w-12 rounded-xl border border-slate-300 bg-white text-xl font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                                        aria-label="Zmanjšaj število zmedenih"
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        inputMode="numeric"
+                                                        min="0"
+                                                        step="1"
+                                                        max={maxConfusedOptions}
+                                                        value={confusedCount}
+                                                        onChange={(event) => handleConfusedInputChange(event.target.value)}
+                                                        onKeyDown={preventInvalidNumberInput}
+                                                        className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-center text-lg font-semibold"
+                                                        aria-label="Število zmedenih"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleConfusedCountChange(confusedCount + 1)}
+                                                        disabled={confusedCount >= maxConfusedOptions}
+                                                        className="h-12 w-12 rounded-xl border border-slate-300 bg-white text-xl font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                                        aria-label="Povečaj število zmedenih"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
                                             </label>
 
                                             <p className="sm:col-span-2 text-sm text-slate-500 leading-6">
