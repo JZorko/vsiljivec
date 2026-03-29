@@ -16,7 +16,7 @@ Spletna družabna igra socialne dedukcije za več igralcev.
 
 ## Kako igrati
 
-1. **Nastavi igro** – Dodaj ali odstrani igralce ter izberi število vsiljivcev in zmedenih.
+1. **Nastavi igro** – Dodaj ali odstrani igralce ter izberi število vsiljivcev, zmedenih in po želji temo besed.
 2. **Razdelitev vlog** – Vsak igralec po vrsti vzame telefon, pritisne gumb in si zapomni svojo besedo. Nato skrije zaslon in poda telefon naprej.
 3. **Razprava** – Ko vsi vidijo svojo vlogo, vsak pove eno asociacijo na svojo besedo.
 4. **Glasovanje** – Skupaj glasujte, kdo je po vašem mnenju vsiljivec.
