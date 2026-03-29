@@ -189,9 +189,7 @@
                 ]
             }
         ];
-        const WORD_PAIRS = WORD_THEMES.flatMap((theme) =>
-            theme.pairs.map((pair) => ({ ...pair, themeId: theme.id, themeLabel: theme.label }))
-        );
+        const WORD_PAIRS = WORD_THEMES.flatMap((theme) => theme.pairs);
         const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
         const shuffleArray = (array) => {
@@ -323,12 +321,12 @@
 
             const startGame = () => {
                 if (!isSetupValid) return;
-                const availablePairs = selectedTheme ? selectedTheme.pairs.map((pair) => ({ ...pair, themeLabel: selectedTheme.label })) : WORD_PAIRS;
+                const availablePairs = selectedTheme ? selectedTheme.pairs : WORD_PAIRS;
                 const pair = availablePairs[Math.floor(Math.random() * availablePairs.length)];
                 const swap = Math.random() > 0.5;
                 const mainWord = swap ? pair.similar : pair.main;
                 const similarWord = swap ? pair.main : pair.similar;
-                
+
                 let roles = [];
                 for (let i = 0; i < impostorCount; i++) roles.push({ type: 'IMPOSTOR', word: null });
                 for (let i = 0; i < confusedCount; i++) roles.push({ type: 'CONFUSED', word: similarWord });
@@ -562,7 +560,7 @@
                                         <li><span className="font-semibold text-slate-900">Vsiljivec:</span> ne prejme nobene besede in mora improvizirati.</li>
                                     </ul>
                                 </div>
-                                    
+
                                 <div className="space-y-3">
                                     <h3 className="font-bold text-indigo-600">Pravila</h3>
                                     <ol className="space-y-2 text-sm text-slate-600 list-decimal list-inside">
