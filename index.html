@@ -337,8 +337,13 @@
                 ]
             }
         ];
-        const WORD_PAIRS = WORD_THEMES.flatMap((theme) => theme.pairs);
-        const HARD_WORD_PAIRS = WORD_THEMES.flatMap((theme) => theme.hardPairs);
+        const getSafeWordPairs = (pairs) => (
+            Array.isArray(pairs)
+                ? pairs.filter((pair) => pair && typeof pair.main === 'string' && typeof pair.similar === 'string')
+                : []
+        );
+        const WORD_PAIRS = WORD_THEMES.flatMap((theme) => getSafeWordPairs(theme.pairs));
+        const HARD_WORD_PAIRS = WORD_THEMES.flatMap((theme) => getSafeWordPairs(theme.hardPairs));
         const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
         const shuffleArray = (array) => {
@@ -362,11 +367,19 @@
         const calculateMaxImpostorCount = (playerCount, currentConfusedCount) => Math.max(0, playerCount - currentConfusedCount - 1);
         const calculateMaxConfusedCount = (playerCount, currentImpostorCount) => Math.max(0, playerCount - currentImpostorCount - 1);
         const getAvailableWordPairs = (selectedTheme, difficulty) => {
+            const defaultPairs = difficulty === 'HARD' ? HARD_WORD_PAIRS : WORD_PAIRS;
             if (!selectedTheme) {
-                return difficulty === 'HARD' ? HARD_WORD_PAIRS : WORD_PAIRS;
+                return defaultPairs;
             }
 
-            return difficulty === 'HARD' ? selectedTheme.hardPairs : selectedTheme.pairs;
+            const normalPairs = getSafeWordPairs(selectedTheme.pairs);
+            const hardPairs = getSafeWordPairs(selectedTheme.hardPairs);
+
+            if (difficulty === 'HARD') {
+                return hardPairs.length > 0 ? hardPairs : normalPairs;
+            }
+
+            return normalPairs.length > 0 ? normalPairs : defaultPairs;
         };
 
         const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
@@ -461,10 +474,11 @@
             }, [players.length]);
 
             const totalSpecialRoles = impostorCount + confusedCount;
-            const isSetupValid = players.length >= 3 && totalSpecialRoles < players.length;
             const maxImpostorOptions = calculateMaxImpostorCount(players.length, confusedCount);
             const maxConfusedOptions = calculateMaxConfusedCount(players.length, impostorCount);
             const selectedTheme = WORD_THEMES.find((theme) => theme.id === selectedThemeId) || null;
+            const hasAvailablePairs = getAvailableWordPairs(selectedTheme, difficulty).length > 0;
+            const isSetupValid = players.length >= 3 && totalSpecialRoles < players.length && hasAvailablePairs;
             const handleImpostorCountChange = (nextImpostorCount) => {
                 const safeImpostorCount = clampCount(nextImpostorCount, 0, maxImpostorOptions);
                 setImpostorCount(safeImpostorCount);
@@ -582,6 +596,7 @@
             const startGame = () => {
                 if (!isSetupValid) return;
                 const availablePairs = getAvailableWordPairs(selectedTheme, difficulty);
+                if (availablePairs.length === 0) return;
                 const pair = availablePairs[Math.floor(Math.random() * availablePairs.length)];
                 const swap = Math.random() > 0.5;
                 const mainWord = swap ? pair.similar : pair.main;
@@ -707,30 +722,40 @@
                                                 </p>
                                             </label>
 
-                                            <label className="block sm:col-span-2">
-                                                <span className="text-sm font-semibold text-slate-700">Težavnost besed</span>
+                                            <fieldset className="block sm:col-span-2">
+                                                <legend className="text-sm font-semibold text-slate-700">Težavnost besed</legend>
                                                 <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setDifficulty('NORMAL')}
-                                                        aria-pressed={difficulty === 'NORMAL'}
-                                                        className={`rounded-xl px-4 py-3 text-sm font-bold transition-colors ${difficulty === 'NORMAL' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-                                                    >
-                                                        Običajne
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setDifficulty('HARD')}
-                                                        aria-pressed={difficulty === 'HARD'}
-                                                        className={`rounded-xl px-4 py-3 text-sm font-bold transition-colors ${difficulty === 'HARD' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-                                                    >
-                                                        Težje
-                                                    </button>
+                                                    <label className="cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            name="difficulty"
+                                                            value="NORMAL"
+                                                            checked={difficulty === 'NORMAL'}
+                                                            onChange={() => setDifficulty('NORMAL')}
+                                                            className="sr-only"
+                                                        />
+                                                        <span className={`block rounded-xl px-4 py-3 text-center text-sm font-bold transition-colors ${difficulty === 'NORMAL' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>
+                                                            Običajne
+                                                        </span>
+                                                    </label>
+                                                    <label className="cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            name="difficulty"
+                                                            value="HARD"
+                                                            checked={difficulty === 'HARD'}
+                                                            onChange={() => setDifficulty('HARD')}
+                                                            className="sr-only"
+                                                        />
+                                                        <span className={`block rounded-xl px-4 py-3 text-center text-sm font-bold transition-colors ${difficulty === 'HARD' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>
+                                                            Težje
+                                                        </span>
+                                                    </label>
                                                 </div>
                                                 <p className="mt-2 text-sm text-slate-500 leading-6">
                                                     Vklopi težje pare besed, če želiš manj očitne namige in zahtevnejšo razpravo.
                                                 </p>
-                                            </label>
+                                            </fieldset>
 
                                             <label className="block">
                                                 <span className="text-sm font-semibold text-slate-700">Število vsiljivcev</span>
