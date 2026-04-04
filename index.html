@@ -346,7 +346,9 @@
             const addPlayer = () => {
                 const trimmedName = newPlayerName.trim();
                 if (!trimmedName) return;
-                setPlayers((currentPlayers) => [...currentPlayers, { id: nextPlayerIdRef.current++, name: trimmedName }]);
+                const nextPlayerId = nextPlayerIdRef.current;
+                nextPlayerIdRef.current += 1;
+                setPlayers((currentPlayers) => [...currentPlayers, { id: nextPlayerId, name: trimmedName }]);
                 setNewPlayerName('');
             };
             const removePlayer = (playerIndex) => {
@@ -427,7 +429,7 @@
                                         <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addPlayer(); }} className="min-w-0 flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." aria-label="Ime igralca" />
                                         <button onClick={addPlayer} className="shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl font-bold shadow-md transition-all active:scale-95">Dodaj</button>
                                     </div>
-                                    <p className="mb-3 text-sm text-slate-500">Povleci igralce ali uporabi puščice na tipkovnici, da spremeniš vrstni red sedenja.</p>
+                                    <p className="mb-3 text-sm text-slate-500" aria-live="polite">Povleci igralce ali uporabi puščice na tipkovnici, da spremeniš vrstni red sedenja.</p>
                                     <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                                         {players.map((player, playerIndex) => (
                                             <span
@@ -451,7 +453,7 @@
                                                 className={`bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2 text-sm border transition-colors ${dropTargetPlayerIndex === playerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-slate-300'} ${draggedPlayerIndex === playerIndex ? 'opacity-60' : ''}`}
                                                 aria-label={`Igralec ${player.name}. Povleci za spremembo vrstnega reda ali uporabi puščice na tipkovnici.`}
                                             >
-                                                <span className="cursor-grab active:cursor-grabbing">☰ {player.name}</span>
+                                                <span className="cursor-grab active:cursor-grabbing"><span aria-hidden="true">☰ </span>{player.name}</span>
                                                 <button onClick={() => removePlayer(playerIndex)} className="text-red-600 hover:text-red-700 focus-visible:text-red-700 font-bold" aria-label={`Odstrani igralca ${player.name}`}>×</button>
                                             </span>
                                         ))}
