@@ -367,13 +367,13 @@
         const calculateMaxImpostorCount = (playerCount, currentConfusedCount) => Math.max(0, playerCount - currentConfusedCount - 1);
         const calculateMaxConfusedCount = (playerCount, currentImpostorCount) => Math.max(0, playerCount - currentImpostorCount - 1);
         const getAvailableWordPairs = (selectedTheme, difficulty) => {
-            const defaultPairs = difficulty === 'HARD' ? HARD_WORD_PAIRS : WORD_PAIRS;
             if (!selectedTheme) {
-                return defaultPairs;
+                return difficulty === 'HARD' ? HARD_WORD_PAIRS : WORD_PAIRS;
             }
 
             const normalPairs = getSafeWordPairs(selectedTheme.pairs);
             const hardPairs = getSafeWordPairs(selectedTheme.hardPairs);
+            const defaultPairs = difficulty === 'HARD' ? HARD_WORD_PAIRS : WORD_PAIRS;
 
             if (difficulty === 'HARD') {
                 return hardPairs.length > 0 ? hardPairs : normalPairs;
@@ -596,7 +596,6 @@
             const startGame = () => {
                 if (!isSetupValid) return;
                 const availablePairs = getAvailableWordPairs(selectedTheme, difficulty);
-                if (availablePairs.length === 0) return;
                 const pair = availablePairs[Math.floor(Math.random() * availablePairs.length)];
                 const swap = Math.random() > 0.5;
                 const mainWord = swap ? pair.similar : pair.main;
