@@ -263,6 +263,8 @@
             const helpDialogRef = useRef(null);
             const previousFocusRef = useRef(null);
             const nextPlayerIdRef = useRef(INITIAL_PLAYERS.length + 1);
+            const activePointerIdRef = useRef(null);
+            const draggedPlayerIndexRef = useRef(null);
             const getHelpDialogFocusableElements = () => helpDialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR) || [];
 
             useEffect(() => {
@@ -321,6 +323,7 @@
             const maxImpostorOptions = calculateMaxImpostorCount(players.length, confusedCount);
             const maxConfusedOptions = calculateMaxConfusedCount(players.length, impostorCount);
             const selectedTheme = WORD_THEMES.find((theme) => theme.id === selectedThemeId) || null;
+            const isFirefoxAndroid = /Android/i.test(navigator.userAgent) && /Firefox/i.test(navigator.userAgent);
             const handleImpostorCountChange = (nextImpostorCount) => {
                 const safeImpostorCount = clampCount(nextImpostorCount, 0, maxImpostorOptions);
                 setImpostorCount(safeImpostorCount);
@@ -384,8 +387,54 @@
                 }
             };
             const resetDragState = () => {
+                activePointerIdRef.current = null;
+                draggedPlayerIndexRef.current = null;
                 setDraggedPlayerIndex(null);
                 setDropTargetPlayerIndex(null);
+            };
+            const getPlayerIndexFromPoint = (clientX, clientY) => {
+                const targetElement = document.elementFromPoint(clientX, clientY)?.closest('[data-player-index]');
+                if (!targetElement) return null;
+                const playerIndex = parseInt(targetElement.dataset.playerIndex, 10);
+                return Number.isNaN(playerIndex) ? null : playerIndex;
+            };
+            const handlePlayerPointerDown = (event, playerIndex) => {
+                if (!isFirefoxAndroid) return;
+                if (event.pointerType === 'mouse' || event.button !== 0 || event.target.closest('button')) return;
+                activePointerIdRef.current = event.pointerId;
+                draggedPlayerIndexRef.current = playerIndex;
+                setDraggedPlayerIndex(playerIndex);
+                setDropTargetPlayerIndex(playerIndex);
+                event.currentTarget.setPointerCapture?.(event.pointerId);
+            };
+            const handlePlayerPointerMove = (event) => {
+                if (!isFirefoxAndroid) return;
+                if (activePointerIdRef.current !== event.pointerId || draggedPlayerIndexRef.current === null) return;
+                const playerIndex = getPlayerIndexFromPoint(event.clientX, event.clientY);
+                if (playerIndex !== dropTargetPlayerIndex) {
+                    setDropTargetPlayerIndex(playerIndex);
+                }
+            };
+            const handlePlayerPointerUp = (event) => {
+                if (!isFirefoxAndroid) return;
+                if (activePointerIdRef.current !== event.pointerId || draggedPlayerIndexRef.current === null) return;
+                const fromIndex = draggedPlayerIndexRef.current;
+                const toIndex = getPlayerIndexFromPoint(event.clientX, event.clientY) ?? dropTargetPlayerIndex;
+                if (toIndex !== null) {
+                    movePlayer(fromIndex, toIndex);
+                }
+                if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+                    event.currentTarget.releasePointerCapture(event.pointerId);
+                }
+                resetDragState();
+            };
+            const handlePlayerPointerCancel = (event) => {
+                if (!isFirefoxAndroid) return;
+                if (activePointerIdRef.current !== event.pointerId) return;
+                if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+                    event.currentTarget.releasePointerCapture(event.pointerId);
+                }
+                resetDragState();
             };
 
             const startGame = () => {
@@ -429,12 +478,13 @@
                                         <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addPlayer(); }} className="min-w-0 flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." aria-label="Ime igralca" />
                                         <button onClick={addPlayer} className="shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl font-bold shadow-md transition-all active:scale-95">Dodaj</button>
                                     </div>
-                                    <p id="player-order-help" className="mb-3 text-sm text-slate-500">Povleci igralce ali uporabi puščice na tipkovnici, da spremeniš vrstni red sedenja.</p>
+                                    <p id="player-order-help" className="mb-3 text-sm text-slate-500">Povleci igralce ali jih premakni s prstom oziroma uporabi puščice na tipkovnici, da spremeniš vrstni red sedenja.</p>
                                     <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                                         {players.map((player, playerIndex) => (
                                             <span
                                                 key={player.id}
-                                                draggable={true}
+                                                data-player-index={playerIndex}
+                                                draggable={!isFirefoxAndroid}
                                                 onDragStart={(event) => {
                                                     event.dataTransfer.setData('text/plain', String(playerIndex));
                                                     event.dataTransfer.effectAllowed = 'move';
@@ -456,12 +506,17 @@
                                                     resetDragState();
                                                 }}
                                                 onDragEnd={resetDragState}
+                                                onPointerDown={(event) => handlePlayerPointerDown(event, playerIndex)}
+                                                onPointerMove={handlePlayerPointerMove}
+                                                onPointerUp={handlePlayerPointerUp}
+                                                onPointerCancel={handlePlayerPointerCancel}
                                                 onKeyDown={(event) => handlePlayerKeyDown(event, playerIndex)}
                                                 tabIndex={0}
                                                 role="button"
                                                 className={`bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2 text-sm border transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 ${dropTargetPlayerIndex === playerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-slate-300'} ${draggedPlayerIndex === playerIndex ? 'opacity-60' : ''}`}
                                                 aria-label={`Igralec ${player.name}. Povleci za spremembo vrstnega reda ali uporabi puščice na tipkovnici.`}
                                                 aria-describedby="player-order-help"
+                                                style={isFirefoxAndroid ? { touchAction: 'none' } : undefined}
                                             >
                                                 <span className="cursor-grab active:cursor-grabbing"><span aria-hidden="true">☰ </span>{player.name}<span className="sr-only"> Povleci za spremembo vrstnega reda.</span></span>
                                                 <button onClick={() => removePlayer(playerIndex)} className="text-red-600 hover:text-red-700 focus-visible:text-red-700 font-bold" aria-label={`Odstrani igralca ${player.name}`}>×</button>
