@@ -244,6 +244,8 @@
             const [phase, setPhase] = useState('SETUP');
             const [players, setPlayers] = useState(['Ana', 'Bojan', 'Cene', 'Darja']);
             const [newPlayerName, setNewPlayerName] = useState('');
+            const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
+            const [dropTargetPlayerIndex, setDropTargetPlayerIndex] = useState(null);
             const [impostorCount, setImpostorCount] = useState(1);
             const [confusedCount, setConfusedCount] = useState(1);
             const [selectedThemeId, setSelectedThemeId] = useState(ALL_THEMES_ID);
@@ -334,6 +336,37 @@
                 if (parsedValue === null) return;
                 handleConfusedCountChange(parsedValue);
             };
+            const addPlayer = () => {
+                const trimmedName = newPlayerName.trim();
+                if (!trimmedName) return;
+                setPlayers([...players, trimmedName]);
+                setNewPlayerName('');
+            };
+            const removePlayer = (playerIndex) => {
+                setPlayers(players.filter((_, index) => index !== playerIndex));
+            };
+            const movePlayer = (fromIndex, toIndex) => {
+                if (fromIndex === toIndex || fromIndex === null || toIndex === null) return;
+                setPlayers((currentPlayers) => {
+                    if (
+                        fromIndex < 0 ||
+                        toIndex < 0 ||
+                        fromIndex >= currentPlayers.length ||
+                        toIndex >= currentPlayers.length
+                    ) {
+                        return currentPlayers;
+                    }
+
+                    const nextPlayers = [...currentPlayers];
+                    const [movedPlayer] = nextPlayers.splice(fromIndex, 1);
+                    nextPlayers.splice(toIndex, 0, movedPlayer);
+                    return nextPlayers;
+                });
+            };
+            const resetDragState = () => {
+                setDraggedPlayerIndex(null);
+                setDropTargetPlayerIndex(null);
+            };
 
             const startGame = () => {
                 if (!isSetupValid) return;
@@ -373,13 +406,33 @@
                                 <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl">
                                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><UsersIcon/> Igralci</h2>
                                     <div className="flex gap-2 mb-4">
-                                        <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} className="min-w-0 flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." aria-label="Ime igralca" />
-                                        <button onClick={() => { if(newPlayerName.trim()) { setPlayers([...players, newPlayerName.trim()]); setNewPlayerName(''); } }} className="shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl font-bold shadow-md transition-all active:scale-95">Dodaj</button>
+                                        <input type="text" value={newPlayerName} onChange={e => setNewPlayerName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addPlayer(); }} className="min-w-0 flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2" placeholder="Ime..." aria-label="Ime igralca" />
+                                        <button onClick={addPlayer} className="shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl font-bold shadow-md transition-all active:scale-95">Dodaj</button>
                                     </div>
+                                    <p className="mb-3 text-sm text-slate-500">Povleci igralce, da spremeniš vrstni red sedenja.</p>
                                     <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
-                                        {players.map(p => (
-                                            <span key={p} className="bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2 text-sm border border-slate-300">
-                                                {p} <button onClick={() => setPlayers(players.filter(x => x !== p))} className="text-red-600 hover:text-red-700 focus-visible:text-red-700 font-bold">×</button>
+                                        {players.map((playerName, playerIndex) => (
+                                            <span
+                                                key={`${playerName}-${playerIndex}`}
+                                                draggable
+                                                onDragStart={() => setDraggedPlayerIndex(playerIndex)}
+                                                onDragOver={(event) => {
+                                                    event.preventDefault();
+                                                    if (dropTargetPlayerIndex !== playerIndex) {
+                                                        setDropTargetPlayerIndex(playerIndex);
+                                                    }
+                                                }}
+                                                onDrop={(event) => {
+                                                    event.preventDefault();
+                                                    movePlayer(draggedPlayerIndex, playerIndex);
+                                                    resetDragState();
+                                                }}
+                                                onDragEnd={resetDragState}
+                                                className={`bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2 text-sm border transition-colors ${dropTargetPlayerIndex === playerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-slate-300'} ${draggedPlayerIndex === playerIndex ? 'opacity-60' : ''}`}
+                                                aria-label={`Igralec ${playerName}. Povleci za spremembo vrstnega reda.`}
+                                            >
+                                                <span className="cursor-grab active:cursor-grabbing">☰ {playerName}</span>
+                                                <button onClick={() => removePlayer(playerIndex)} className="text-red-600 hover:text-red-700 focus-visible:text-red-700 font-bold" aria-label={`Odstrani igralca ${playerName}`}>×</button>
                                             </span>
                                         ))}
                                     </div>
