@@ -338,7 +338,7 @@
             }
         ];
         const WORD_PAIRS = WORD_THEMES.flatMap((theme) => theme.pairs);
-        const HARD_WORD_PAIRS = WORD_THEMES.flatMap((theme) => theme.hardPairs || []);
+        const HARD_WORD_PAIRS = WORD_THEMES.flatMap((theme) => theme.hardPairs);
         const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
         const shuffleArray = (array) => {
@@ -361,6 +361,13 @@
         };
         const calculateMaxImpostorCount = (playerCount, currentConfusedCount) => Math.max(0, playerCount - currentConfusedCount - 1);
         const calculateMaxConfusedCount = (playerCount, currentImpostorCount) => Math.max(0, playerCount - currentImpostorCount - 1);
+        const getAvailableWordPairs = (selectedTheme, difficulty) => {
+            if (!selectedTheme) {
+                return difficulty === 'HARD' ? HARD_WORD_PAIRS : WORD_PAIRS;
+            }
+
+            return difficulty === 'HARD' ? selectedTheme.hardPairs : selectedTheme.pairs;
+        };
 
         const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
         const PlayIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
@@ -458,9 +465,7 @@
             const maxImpostorOptions = calculateMaxImpostorCount(players.length, confusedCount);
             const maxConfusedOptions = calculateMaxConfusedCount(players.length, impostorCount);
             const selectedTheme = WORD_THEMES.find((theme) => theme.id === selectedThemeId) || null;
-            const availablePairs = selectedTheme
-                ? (difficulty === 'HARD' ? (selectedTheme.hardPairs || selectedTheme.pairs) : selectedTheme.pairs)
-                : (difficulty === 'HARD' ? HARD_WORD_PAIRS : WORD_PAIRS);
+            const availablePairs = getAvailableWordPairs(selectedTheme, difficulty);
             const handleImpostorCountChange = (nextImpostorCount) => {
                 const safeImpostorCount = clampCount(nextImpostorCount, 0, maxImpostorOptions);
                 setImpostorCount(safeImpostorCount);
@@ -697,10 +702,10 @@
                                                         <option key={theme.id} value={theme.id}>{theme.label}</option>
                                                     ))}
                                                 </select>
-                                                 <p className="mt-2 text-sm text-slate-500 leading-6">
-                                                     Izberi temo, če želiš ožji nabor besed in nekoliko lažjo igro za vsiljivce.
-                                                 </p>
-                                             </label>
+                                                <p className="mt-2 text-sm text-slate-500 leading-6">
+                                                    Izberi temo, če želiš ožji nabor besed in nekoliko lažjo igro za vsiljivce.
+                                                </p>
+                                            </label>
 
                                             <label className="block sm:col-span-2">
                                                 <span className="text-sm font-semibold text-slate-700">Težavnost besed</span>
@@ -727,8 +732,8 @@
                                                 </p>
                                             </label>
 
-                                             <label className="block">
-                                                 <span className="text-sm font-semibold text-slate-700">Število vsiljivcev</span>
+                                            <label className="block">
+                                                <span className="text-sm font-semibold text-slate-700">Število vsiljivcev</span>
                                                 <div className="mt-2 flex items-center gap-2">
                                                     <button
                                                         type="button"
