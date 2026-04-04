@@ -465,7 +465,6 @@
             const maxImpostorOptions = calculateMaxImpostorCount(players.length, confusedCount);
             const maxConfusedOptions = calculateMaxConfusedCount(players.length, impostorCount);
             const selectedTheme = WORD_THEMES.find((theme) => theme.id === selectedThemeId) || null;
-            const availablePairs = getAvailableWordPairs(selectedTheme, difficulty);
             const handleImpostorCountChange = (nextImpostorCount) => {
                 const safeImpostorCount = clampCount(nextImpostorCount, 0, maxImpostorOptions);
                 setImpostorCount(safeImpostorCount);
@@ -582,6 +581,7 @@
 
             const startGame = () => {
                 if (!isSetupValid) return;
+                const availablePairs = getAvailableWordPairs(selectedTheme, difficulty);
                 const pair = availablePairs[Math.floor(Math.random() * availablePairs.length)];
                 const swap = Math.random() > 0.5;
                 const mainWord = swap ? pair.similar : pair.main;
