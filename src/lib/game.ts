@@ -30,9 +30,9 @@ export function calculateMaxConfusedCount(playerCount: number, currentImpostorCo
   return Math.max(0, playerCount - currentImpostorCount - 1);
 }
 
-export const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
 const PLAYERS_STORAGE_KEY = 'vsiljivec-players';
+const SETTINGS_STORAGE_KEY = 'vsiljivec-settings';
+const DARK_MODE_KEY = 'vsiljivec-dark-mode';
 
 export function loadPlayers(): Player[] | null {
   try {
@@ -50,6 +50,40 @@ export function loadPlayers(): Player[] | null {
 export function savePlayers(players: Player[]): void {
   try {
     localStorage.setItem(PLAYERS_STORAGE_KEY, JSON.stringify(players));
+  } catch {}
+}
+
+export interface GameSettings {
+  impostorCount: number;
+  confusedCount: number;
+  selectedThemeId: string;
+  difficulty: string;
+}
+
+export function loadSettings(): GameSettings | null {
+  try {
+    const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored);
+    if (typeof parsed !== 'object' || parsed === null) return null;
+    if (typeof parsed.impostorCount !== 'number' || typeof parsed.confusedCount !== 'number') return null;
+    if (typeof parsed.selectedThemeId !== 'string') return null;
+    if (parsed.difficulty !== 'NORMAL' && parsed.difficulty !== 'HARD') return null;
+    return parsed as GameSettings;
+  } catch {
+    return null;
+  }
+}
+
+export function saveSettings(settings: GameSettings): void {
+  try {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  } catch {}
+}
+
+export function saveDarkMode(isDark: boolean): void {
+  try {
+    localStorage.setItem(DARK_MODE_KEY, isDark ? 'dark' : 'light');
   } catch {}
 }
 
