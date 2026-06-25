@@ -9,6 +9,7 @@ concurrency: preview-${{ github.ref }}
 permissions:
   contents: write
   pull-requests: write
+  deployments: write
 
 jobs:
   preview:
