@@ -1,0 +1,26 @@
+---
+import Game from '../components/Game';
+---
+
+<html lang="sl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vsiljivec - Party Igra</title>
+  </head>
+  <body class="bg-slate-100">
+    <Game client:load />
+  </body>
+</html>
+
+<style is:global>
+  .animation-fade-in { animation: fadeIn 0.4s ease-out; }
+  .animation-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+  .animation-scale-in { animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+</style>

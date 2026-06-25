@@ -22,9 +22,16 @@ Spletna družabna igra socialne dedukcije za več igralcev.
 4. **Glasovanje** – Skupaj glasujte, kdo je po vašem mnenju vsiljivec.
 5. **Nova igra** – Po koncu glasovanja začnite novo rundo.
 
-## Zagon
+## Razvoj
 
-Igra deluje neposredno v brskalniku — odpri datoteko `index.html` ali obišči objavljeno stran na [GitHub Pages](https://jzorko.github.io/vsiljivec/).
+Potrebuješ [Bun](https://bun.sh/) (ali uporabi priložen devcontainer).
+
+```bash
+bun install        # namesti odvisnosti
+bun dev            # zaženi razvojni strežnik (http://localhost:4321)
+bun run build      # zgradi statično stran v dist/
+bun preview        # predogled zgrajene strani
+```
 
 ## Licenca
 

@@ -1,0 +1,41 @@
+{
+  "name": "vsiljivec",
+  // Official Bun image (Debian-slim, ships the Bun runtime). It's minimal, so
+  // the features below add git and common shell tooling the devcontainer needs.
+  "image": "oven/bun:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  // SELinux (openSUSE with enforcing SELinux): Docker's "--mount" syntax — which
+  // devcontainers use for workspaceMount — supports neither the "z" shorthand
+  // nor "relabel=shared" (those only exist in the "-v" syntax). Instead, disable
+  // SELinux labeling for this container via runArgs so the bind mount is
+  // readable/writable; without it the workspace shows up empty / permission-denied.
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/vsiljivec,type=bind",
+  "workspaceFolder": "/workspaces/vsiljivec",
+  "runArgs": ["--security-opt", "label=disable"],
+
+  // Astro dev server default port.
+  "forwardPorts": [4321],
+  "portsAttributes": {
+    "4321": {
+      "label": "Astro dev server",
+      "onAutoForward": "openPreview"
+    }
+  },
+
+  "postCreateCommand": "bun install",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "astro-build.astro-vscode",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}
