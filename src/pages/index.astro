@@ -7,9 +7,18 @@ import Game from '../components/Game';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
     <title>Vsiljivec - Party Igra</title>
+    <script is:inline>
+      (function() {
+        var stored = localStorage.getItem('vsiljivec-dark-mode');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
-  <body class="bg-slate-100">
-    <Game client:load />
+  <body>
+    <Game client:only="react" />
   </body>
 </html>
