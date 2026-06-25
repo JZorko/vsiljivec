@@ -32,6 +32,28 @@ export function calculateMaxConfusedCount(playerCount: number, currentImpostorCo
 
 export const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
+const PLAYERS_STORAGE_KEY = 'vsiljivec-players';
+
+export function loadPlayers(): Player[] | null {
+  try {
+    const stored = localStorage.getItem(PLAYERS_STORAGE_KEY);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    if (!parsed.every((p: unknown) => typeof p === 'object' && p !== null && typeof (p as Player).id === 'number' && typeof (p as Player).name === 'string')) return null;
+    return parsed as Player[];
+  } catch {
+    return null;
+  }
+}
+
+export function savePlayers(players: Player[]): void {
+  try {
+    localStorage.setItem(PLAYERS_STORAGE_KEY, JSON.stringify(players));
+  } catch {}
+}
+
+
 export interface Player {
   id: number;
   name: string;

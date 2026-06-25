@@ -10,6 +10,8 @@ import {
   calculateMaxConfusedCount,
   FOCUSABLE_SELECTOR,
   INITIAL_PLAYERS,
+  loadPlayers,
+  savePlayers,
 } from '../lib/game';
 import type { Player, AssignedPlayer, GamePhase } from '../lib/game';
 import UsersIcon from './icons/UsersIcon';
@@ -20,7 +22,7 @@ import HelpCircleIcon from './icons/HelpCircleIcon';
 
 export default function Game() {
   const [phase, setPhase] = useState<GamePhase>('SETUP');
-  const [players, setPlayers] = useState<Player[]>(INITIAL_PLAYERS);
+  const [players, setPlayers] = useState<Player[]>(() => loadPlayers() ?? INITIAL_PLAYERS);
   const [newPlayerName, setNewPlayerName] = useState('');
   const [draggedPlayerIndex, setDraggedPlayerIndex] = useState<number | null>(null);
   const [dropTargetPlayerIndex, setDropTargetPlayerIndex] = useState<number | null>(null);
@@ -35,7 +37,9 @@ export default function Game() {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const helpDialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
-  const nextPlayerIdRef = useRef(INITIAL_PLAYERS.length + 1);
+  const nextPlayerIdRef = useRef(
+    Math.max(...(loadPlayers() ?? INITIAL_PLAYERS).map((p) => p.id)) + 1
+  );
   const activePointerIdRef = useRef<number | null>(null);
   const draggedPlayerIndexRef = useRef<number | null>(null);
   const usePointerDragFallbackRef = useRef(false);
@@ -80,6 +84,10 @@ export default function Game() {
       previousFocusRef.current?.focus?.();
     };
   }, [isHelpOpen]);
+
+  useEffect(() => {
+    savePlayers(players);
+  }, [players]);
 
   useEffect(() => {
     const nextConfusedCount = Math.min(confusedCount, calculateMaxConfusedCount(players.length, impostorCount));
@@ -134,6 +142,11 @@ export default function Game() {
     nextPlayerIdRef.current += 1;
     setPlayers((currentPlayers) => [...currentPlayers, { id: nextPlayerId, name: trimmedName }]);
     setNewPlayerName('');
+  };
+
+  const clearPlayers = () => {
+    setPlayers([]);
+    nextPlayerIdRef.current = 1;
   };
 
   const removePlayer = (playerIndex: number) => {
@@ -279,9 +292,20 @@ export default function Game() {
               Kako se igra?
             </button>
             <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl">
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <UsersIcon /> Igralci
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <UsersIcon /> Igralci
+                </h2>
+                {players.length > 0 && (
+                  <button
+                    onClick={clearPlayers}
+                    className="text-sm text-slate-500 hover:text-red-600 transition-colors"
+                    aria-label="Počisti vse igralce"
+                  >
+                    Počisti
+                  </button>
+                )}
+              </div>
               <div className="flex gap-2 mb-4">
                 <input
                   type="text"
