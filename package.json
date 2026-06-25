@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "astro dev",
+    "dev": "ASTRO_BASE=/ astro dev --host 0.0.0.0",
     "build": "astro build",
     "test": "vitest run",
     "preview": "astro preview"

@@ -69,6 +69,7 @@ describe('calculateMaxImpostorCount', () => {
 
   it('returns 0 when no room', () => {
     expect(calculateMaxImpostorCount(1, 0)).toBe(0);
+    expect(calculateMaxImpostorCount(2, 0)).toBe(0);
     expect(calculateMaxImpostorCount(3, 3)).toBe(0);
   });
 });
@@ -80,6 +81,7 @@ describe('calculateMaxConfusedCount', () => {
 
   it('returns 0 when no room', () => {
     expect(calculateMaxConfusedCount(1, 0)).toBe(0);
+    expect(calculateMaxConfusedCount(2, 0)).toBe(0);
   });
 });
 
