@@ -8,10 +8,11 @@ const CIRCUMFERENCE = Math.round(2 * Math.PI * CIRCLE_RADIUS);
 interface RevealPhaseProps {
   player: AssignedPlayer;
   themeLabel: string;
+  showDefinitions: boolean;
   onContinue: () => void;
 }
 
-export default function RevealPhase({ player, themeLabel, onContinue }: RevealPhaseProps) {
+export default function RevealPhase({ player, themeLabel, showDefinitions, onContinue }: RevealPhaseProps) {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,6 +51,11 @@ export default function RevealPhase({ player, themeLabel, onContinue }: RevealPh
                 <span className="text-slate-900 dark:text-slate-100">{player.word}</span>
               )}
             </h2>
+            {showDefinitions && player.definition && player.role !== 'IMPOSTOR' && (
+              <p className="mt-3 text-sm italic text-slate-500 dark:text-slate-400">
+                {player.definition}
+              </p>
+            )}
           </>
         ) : (
           <div

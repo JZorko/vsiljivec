@@ -29,6 +29,7 @@ export default function Game() {
   const [confusedCount, setConfusedCount] = useState(savedSettings?.confusedCount ?? 1);
   const [selectedThemeId, setSelectedThemeId] = useState(savedSettings?.selectedThemeId ?? ALL_THEMES_ID);
   const [difficulty, setDifficulty] = useState<Difficulty>((savedSettings?.difficulty as Difficulty) ?? 'NORMAL');
+  const [showDefinitions, setShowDefinitions] = useState(savedSettings?.showDefinitions ?? true);
   const [gameData, setGameData] = useState<AssignedPlayer[]>([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentThemeLabel, setCurrentThemeLabel] = useState('');
@@ -46,8 +47,8 @@ export default function Game() {
   }, [players]);
 
   useEffect(() => {
-    saveSettings({ impostorCount, confusedCount, selectedThemeId, difficulty });
-  }, [impostorCount, confusedCount, selectedThemeId, difficulty]);
+    saveSettings({ impostorCount, confusedCount, selectedThemeId, difficulty, showDefinitions });
+  }, [impostorCount, confusedCount, selectedThemeId, difficulty, showDefinitions]);
 
   useEffect(() => {
     const nextConfusedCount = Math.min(confusedCount, calculateMaxConfusedCount(players.length, impostorCount));
@@ -96,17 +97,20 @@ export default function Game() {
     const swap = Math.random() > 0.5;
     const mainWord = swap ? pair.similar : pair.main;
     const similarWord = swap ? pair.main : pair.similar;
+    const mainDef = swap ? pair.similarDef : pair.mainDef;
+    const similarDef = swap ? pair.mainDef : pair.similarDef;
 
-    const roles: { type: 'IMPOSTOR' | 'CONFUSED' | 'MAJORITY'; word: string | null }[] = [];
-    for (let i = 0; i < impostorCount; i++) roles.push({ type: 'IMPOSTOR', word: null });
-    for (let i = 0; i < confusedCount; i++) roles.push({ type: 'CONFUSED', word: similarWord });
-    for (let i = 0; i < players.length - totalSpecialRoles; i++) roles.push({ type: 'MAJORITY', word: mainWord });
+    const roles: { type: 'IMPOSTOR' | 'CONFUSED' | 'MAJORITY'; word: string | null; definition: string | null }[] = [];
+    for (let i = 0; i < impostorCount; i++) roles.push({ type: 'IMPOSTOR', word: null, definition: null });
+    for (let i = 0; i < confusedCount; i++) roles.push({ type: 'CONFUSED', word: similarWord, definition: similarDef ?? null });
+    for (let i = 0; i < players.length - totalSpecialRoles; i++) roles.push({ type: 'MAJORITY', word: mainWord, definition: mainDef ?? null });
 
     const shuffledRoles = shuffleArray(roles);
     const assigned: AssignedPlayer[] = players.map((player, i) => ({
       name: player.name,
       role: shuffledRoles[i].type,
       word: shuffledRoles[i].word,
+      definition: shuffledRoles[i].definition,
     }));
 
     setGameData(assigned);
@@ -172,6 +176,8 @@ export default function Game() {
             onThemeChange={setSelectedThemeId}
             difficulty={difficulty}
             onDifficultyChange={setDifficulty}
+            showDefinitions={showDefinitions}
+            onShowDefinitionsChange={setShowDefinitions}
             isSetupValid={isSetupValid}
             onStartGame={startGame}
             onOpenHelp={() => {
@@ -193,6 +199,7 @@ export default function Game() {
             key={currentPlayerIndex}
             player={gameData[currentPlayerIndex]}
             themeLabel={currentThemeLabel}
+            showDefinitions={showDefinitions}
             onContinue={handleRevealContinue}
           />
         )}

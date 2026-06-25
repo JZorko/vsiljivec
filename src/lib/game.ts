@@ -23,10 +23,12 @@ export function preventInvalidNumberInput(event: React.KeyboardEvent): void {
 }
 
 export function calculateMaxImpostorCount(playerCount: number, currentConfusedCount: number): number {
+  if (playerCount < 3) return 0;
   return Math.max(0, playerCount - currentConfusedCount - 1);
 }
 
 export function calculateMaxConfusedCount(playerCount: number, currentImpostorCount: number): number {
+  if (playerCount < 3) return 0;
   return Math.max(0, playerCount - currentImpostorCount - 1);
 }
 
@@ -58,6 +60,7 @@ export interface GameSettings {
   confusedCount: number;
   selectedThemeId: string;
   difficulty: string;
+  showDefinitions: boolean;
 }
 
 export function loadSettings(): GameSettings | null {
@@ -68,8 +71,8 @@ export function loadSettings(): GameSettings | null {
     if (typeof parsed !== 'object' || parsed === null) return null;
     if (typeof parsed.impostorCount !== 'number' || typeof parsed.confusedCount !== 'number') return null;
     if (typeof parsed.selectedThemeId !== 'string') return null;
-    if (parsed.difficulty !== 'NORMAL' && parsed.difficulty !== 'HARD') return null;
-    return parsed as GameSettings;
+    if (parsed.difficulty !== 'EASY' && parsed.difficulty !== 'NORMAL' && parsed.difficulty !== 'HARD') return null;
+    return { ...parsed, showDefinitions: typeof parsed.showDefinitions === 'boolean' ? parsed.showDefinitions : true } as GameSettings;
   } catch {
     return null;
   }
@@ -99,6 +102,7 @@ export interface AssignedPlayer {
   name: string;
   role: RoleType;
   word: string | null;
+  definition: string | null;
 }
 
 export type GamePhase = 'SETUP' | 'PASS' | 'REVEAL' | 'END';

@@ -22,6 +22,8 @@ interface SetupPhaseProps {
   onThemeChange: (id: string) => void;
   difficulty: Difficulty;
   onDifficultyChange: (d: Difficulty) => void;
+  showDefinitions: boolean;
+  onShowDefinitionsChange: (v: boolean) => void;
   isSetupValid: boolean;
   onStartGame: () => void;
   onOpenHelp: () => void;
@@ -41,6 +43,8 @@ export default function SetupPhase({
   onThemeChange,
   difficulty,
   onDifficultyChange,
+  showDefinitions,
+  onShowDefinitionsChange,
   isSetupValid,
   onStartGame,
   onOpenHelp,
@@ -271,7 +275,7 @@ export default function SetupPhase({
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Vsiljivci: {impostorCount} • Zmedeni: {confusedCount} • Tema:{' '}
               {selectedTheme ? selectedTheme.label : 'Vse teme'} • Besede:{' '}
-              {difficulty === 'HARD' ? 'Težje' : 'Običajne'}
+              {difficulty === 'EASY' ? 'Lahke' : difficulty === 'HARD' ? 'Težje' : 'Običajne'}
             </p>
           </div>
           <span className="text-slate-500 dark:text-slate-400">
@@ -306,7 +310,13 @@ export default function SetupPhase({
 
             <fieldset className="block sm:col-span-2">
               <legend className="text-sm font-semibold text-slate-700 dark:text-slate-200">Težavnost besed</legend>
-              <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 dark:bg-slate-700 p-1">
+              <div className="mt-2 grid grid-cols-3 gap-2 rounded-2xl bg-slate-100 dark:bg-slate-700 p-1">
+                <label className="cursor-pointer">
+                  <input type="radio" name="difficulty" value="EASY" checked={difficulty === 'EASY'} onChange={() => onDifficultyChange('EASY')} className="sr-only" />
+                  <span className={`block rounded-xl px-4 py-3 text-center text-sm font-bold transition-colors ${difficulty === 'EASY' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}>
+                    Lahke
+                  </span>
+                </label>
                 <label className="cursor-pointer">
                   <input type="radio" name="difficulty" value="NORMAL" checked={difficulty === 'NORMAL'} onChange={() => onDifficultyChange('NORMAL')} className="sr-only" />
                   <span className={`block rounded-xl px-4 py-3 text-center text-sm font-bold transition-colors ${difficulty === 'NORMAL' ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}>
@@ -321,9 +331,27 @@ export default function SetupPhase({
                 </label>
               </div>
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 leading-6">
-                Vklopi težje pare besed, če želiš manj očitne namige in zahtevnejšo razpravo.
+                Lahke besede so primerne za mlajše igralce. Težje pare besed ponujajo manj očitne namige.
               </p>
             </fieldset>
+
+            <div className="flex items-center justify-between gap-4 sm:col-span-2">
+              <div>
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Prikaži razlage besed</span>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 leading-6">
+                  Ob besedi prikaži kratek opis, da vsi vedo, o čem je govora.
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={showDefinitions}
+                onClick={() => onShowDefinitionsChange(!showDefinitions)}
+                className={`relative shrink-0 inline-flex h-7 w-12 items-center rounded-full transition-colors ${showDefinitions ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`}
+              >
+                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${showDefinitions ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </div>
 
             <label className="block">
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Število vsiljivcev</span>
